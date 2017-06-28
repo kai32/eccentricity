@@ -6,7 +6,7 @@ This code is inspired by the implementation described in  [2]. Yet, it is is not
 
 The code is provided as is and is for academic purpose only. 
 
-Contact voanna AT vision.ee.ethz.ch for questions
+Contact voanna AT vision.ee.ethz.ch and gemmar AT mit.edu for questions.
 
 # Dependencies
 ## Python packages
@@ -122,8 +122,8 @@ The demo experiment is a template for running similar experiments. To create a n
 # References
 If you use the code, partly or as is, in your projects and papers, please cite:
 
-[1] Volokitin, A., Roig, G., and Poggio, T. Do Deep Neural Networks Suffer from Crowding?. CBMM memo noXX (2017).
+[1] Volokitin, A., Roig, G., and Poggio, T. Do Deep Neural Networks Suffer from Crowding?. arXiv:1706.08616, CBMM memo no69 (2017).
 
 [2] Chen, F., Roig, G., Isik, L., Boix, X. and Poggio, T. Eccentricity Dependent Deep Neural Networks: Modeling Invariance in Human Vision. AAAI Spring Symposium Series, Science of Intelligence (2017).
 
-[3] Poggio, T., Mutch, J., Isik, L. Computational role of eccentricity dependent cortical magnification. arXiv:1406.1770, CBMM memo no17, (2014).
+[3] Poggio, T., Mutch, J., Isik, L. Computational role of eccentricity dependent cortical magnification. arXiv:1406.1770, CBMM memo no17 (2014).
