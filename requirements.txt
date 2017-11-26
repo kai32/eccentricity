@@ -1,7 +1,12 @@
+appnope==0.1.0
 backports-abc==0.5
+bleach==1.5.0
 cycler==0.10.0
+dask==0.16.0
 decorator==4.0.10
 entrypoints==0.2.2
+enum34==1.1.6
+html5lib==0.9999999
 ipdb==0.10.1
 ipykernel==4.5.1
 ipython==5.1.0
@@ -13,6 +18,7 @@ jupyter==1.0.0
 jupyter-client==4.4.0
 jupyter-console==5.0.0
 jupyter-core==4.2.0
+Markdown==2.6.9
 MarkupSafe==0.23
 matplotlib==1.5.3
 mistune==0.7.3
@@ -21,7 +27,6 @@ nbformat==4.1.0
 networkx==1.11
 notebook==4.2.3
 numpy==1.11.2
-path.py==0.0.0
 pexpect==4.0.1
 pickleshare==0.7.4
 Pillow==3.4.2
@@ -38,9 +43,12 @@ scikit-image==0.12.3
 scipy==0.18.1
 simplegeneric==0.8.1
 six==1.10.0
-tensorflow==0.10.0
+tensorflow==1.4.0
+tensorflow-tensorboard==0.4.0rc3
 terminado==0.6
+toolz==0.8.2
 tornado==4.4.2
 traitlets==4.3.1
 wcwidth==0.1.7
+Werkzeug==0.12.2
 widgetsnbextension==1.2.6

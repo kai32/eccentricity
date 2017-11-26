@@ -35,10 +35,12 @@ def train_dir():
 
 def train():
   """Train eccentricity mdoel for a number of steps."""
-  json.dumps(FLAGS.__dict__, os.path.join(FLAGS.train_dir, 
-    'pm{}_lr{:.0e}_c{}'.format(FLAGS.pm, FLAGS.learning_rate, FLAGS.chevron), 
-    'settings.json'), 
-    ensure_ascii=True)
+  filename = os.path.join(FLAGS.train_dir,
+    'pm{}_lr{:.0e}_c{}'.format(FLAGS.pm, FLAGS.learning_rate, FLAGS.chevron),
+	'settings.json')
+  os.makedirs(os.path.dirname(filename), exist_ok=True)
+  with open(filename, 'w+') as fp:
+    json.dump(FLAGS.__dict__, fp, ensure_ascii=True, cls=SetEncoder)
   with tf.Graph().as_default():
     global_step = tf.Variable(0, trainable=False)
 
@@ -57,10 +59,10 @@ def train():
     train_op = ecc.train(loss, global_step)
 
     # Create a saver.
-    saver = tf.train.Saver(tf.all_variables())
+    saver = tf.train.Saver(tf.global_variables())
 
     # Build the summary operation based on the TF collection of Summaries.
-    summary_op = tf.merge_all_summaries()
+    summary_op = tf.summary.merge_all()
 
     # Build an initialization operation to run below.
     init = tf.group(tf.initialize_all_variables(),
@@ -73,7 +75,7 @@ def train():
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
-    summary_writer = tf.train.SummaryWriter(train_dir(), sess.graph)
+    summary_writer = tf.summary.FileWriter(train_dir(), sess.graph)
 
     print('Settings used are:')
     f = FLAGS.__dict__['__flags']
@@ -110,7 +112,7 @@ def train():
           saver.save(sess, checkpoint_path, global_step=step)
 
         step += 1
-    
+
     except tf.errors.OutOfRangeError:
       checkpoint_path = os.path.join(train_dir(), 'model.ckpt')
       saver.save(sess, checkpoint_path, global_step=step)
@@ -125,13 +127,18 @@ def train():
     sess.close()
 
 
-def main(argv=None):  
+def main(argv=None):
   records.maybe_download_and_preprocess_training()
   if tf.gfile.Exists(train_dir()):
     tf.gfile.DeleteRecursively(train_dir())
   tf.gfile.MakeDirs(train_dir())
   train()
 
+class SetEncoder(json.JSONEncoder):
+   def default(self, obj):
+      if isinstance(obj, set):
+         return list(obj)
+      return json.JSONEncoder.default(self, obj)
 
 if __name__ == '__main__':
   tf.app.run()

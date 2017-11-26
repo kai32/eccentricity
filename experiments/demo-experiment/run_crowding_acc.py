@@ -69,24 +69,19 @@ def main():
         for i in range(len(all_jobs)):
           count += 1
           shname = os.path.join('experiments/{}/gen/scripts'.format(EXPERIMENT), '{}_eval{}.sh'.format(model_name, i))
-          
+
           pycmd = 'experiments/{}/eval_all.py --job_id={} --model_id={}'.format(EXPERIMENT, i, j)
-          slurmcmd = 'sbatch -n 1 --gres=gpu:1 --mem=8000 --time=01:00:00'
-          log= ' -o {}'.format(os.path.join(evallog_dir, str(i) + '.log'))
+          log= ' | tee {}'.format(os.path.join(evallog_dir, str(i) + '.log'))
 
           with open(shname, 'w') as f:
             f.write('#!/bin/sh\n')
-            f.write(pycmd)
+            f.write('unbuffer ' + pycmd + log)
 
           st = os.stat(shname)
           os.chmod(shname, st.st_mode | stat.S_IEXEC)
-          
-          g.write(slurmcmd + ' ' + log + ' ' + shname + '\n')
-          if count % 200 == 0:
-            g.write('echo  Sleeping until jobs finish...\n')
-            g.write('while (( $(squeue -u $USER | wc -l) > 300 )); do sleep 1m; done\n')
-            g.write('echo Done sleeping, submitting jobs...\n')
-          # print(slurmcmd + ' ' + log + ' ' + shname)
+
+          g.write('echo running {}, logs at {}\n'.format(shname, evallog_dir + str(i) + '.log'))
+          g.write(shname + '\n')
 
       st = os.stat(eval_all_sh)
       os.chmod(eval_all_sh, st.st_mode | stat.S_IEXEC)

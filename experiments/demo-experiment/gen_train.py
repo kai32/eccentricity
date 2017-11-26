@@ -11,7 +11,7 @@ os.makedirs('experiments/{}/gen/trained'.format(EXPERIMENT), exist_ok=True)
 
 train_all_sh = os.path.join('experiments/{}/gen/scripts/train_all.sh'.format(EXPERIMENT))
 with open(train_all_sh, 'w') as g:
-  
+
   # SETTING Settings common to all models to train for this experiment:
   pm = '11-1-1-1-1'
   total_pool = True
@@ -34,35 +34,25 @@ with open(train_all_sh, 'w') as g:
         '--train_dir={} '
         '--num_scales={} '
         '--contrast_norm={} '
-        '--random_shifts '.format( 
-          lr, 
-          pm, 
+        '--random_shifts '.format(
+          lr,
+          pm,
           model_name,
           total_pool,
           os.path.join('experiments', EXPERIMENT, 'gen'),
           pm.split('-')[0], # num scales
           contrast_norm))
-      slurmcmd = 'sbatch -n 8 --gres=gpu:titan-x:1 --mem=8000 --time=06:00:00'
-      log= ' -o experiments/{}/gen/trainlogs/{}.log '.format(EXPERIMENT, model_name)
+      logdir = 'experiments/{}/gen/trainlogs/{}.log '.format(EXPERIMENT, model_name)
+      log= ' | tee {}'.format(logdir)
       shname = os.path.join('experiments/{}/gen/scripts'.format(EXPERIMENT), 'train_{}.sh'.format(model_name))
       with open(shname, 'w') as f:
         f.write('#!/bin/sh\n')
-        f.write(pycmd)
+        f.write('unbuffer ' + pycmd + log)
       st = os.stat(shname)
       os.chmod(shname, st.st_mode | stat.S_IEXEC)
-      
-      g.write(slurmcmd + log + shname + '\n')
 
-    # wait until the jobs with 0.1 learning rate have already 
-    # created the needed tffiles, so we don't have parallel processes 
-    # writing to the same file and corrupting it.
-    # here we just check that all jobs finished before submitting the rest
-    if lr == 0.1:
-      g.write('echo  Sleeping until first tffiles are created...\n')
-      g.write('while (( $(squeue -u $USER | wc -l) > 1 )); do sleep 1m; done\n')
-      g.write('echo Done sleeping, submitting jobs...\n')
-
-      # print(slurmcmd + log + shname)
+      g.write('echo running {}, logs written to {} \n'.format(model_name, logdir))
+      g.write(shname + '\n')
 
 st = os.stat(train_all_sh)
 os.chmod(train_all_sh, st.st_mode | stat.S_IEXEC)
